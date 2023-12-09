@@ -1,0 +1,70 @@
+{
+    "name": "RawNet2",
+    "n_gpu": 1,
+    "preprocessing": {
+        "sr": 16000,
+        "spectrogram": {},
+        "log_spec": true
+    },
+    "augmentations": {
+        "wave": [],
+        "spectrogram": []
+    },
+    "arch": {
+        "type": "RawNet2",
+        "args": {}
+    },
+    "data": {
+        "train": {
+            "batch_size": 2,
+            "num_workers": 4,
+            "datasets": [
+                {
+                    "type": "ASVspoofDataset",
+                    "args": {
+                        "flac_path": "data/LA/ASVspoof2019_LA_train/flac",
+                        "labels_path": "data/LA/ASVspoof2019_LA_cm_protocols/ASVspoof2019.LA.cm.train.trn.txt"
+                    }
+                }
+            ]
+        },
+        "val": {
+            "batch_size": 2,
+            "num_workers": 4,
+            "datasets": [
+                {
+                    "type": "ASVspoofDataset",
+                    "args": {
+                        "flac_path": "data/LA/ASVspoof2019_LA_eval/flac",
+                        "labels_path": "data/LA/ASVspoof2019_LA_cm_protocols/ASVspoof2019.LA.cm.eval.trl.txt"
+                    }
+                }
+            ]
+        }
+    },
+    "optimizer": {
+        "type": "AdamW",
+        "args": {
+            "lr":  0.0001,
+            "weight_decay": 0.0001
+        }
+    },
+    "loss": {
+        "type": "RawNet2Loss",
+        "args": {}
+    },
+    "metrics": [],
+    "lr_scheduler": {},
+    "trainer": {
+        "epochs": 100,
+        "save_dir": "saved/",
+        "save_period": 3,
+        "verbosity": 1,
+        "monitor": "min val_loss",
+        "early_stop": 100,
+        "visualize": "wandb",
+        "wandb_project": "speaker_separation",
+        "len_epoch": 50,
+        "grad_norm_clip": 100
+    }
+}
