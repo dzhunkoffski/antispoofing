@@ -7,7 +7,7 @@ from src.model.rawnet2.fms import FMS
 
 from src.base.base_model import BaseModel
 
-class ResBlockInitial(BaseModel):
+class ResBlockInitial(nn.Module):
     def __init__(self, in_channels:int, out_channels: int) -> None:
         super().__init__()
         self.layer = nn.Sequential(
@@ -66,7 +66,7 @@ class AbsoluteWrapper(nn.Module):
         x = torch.absolute(x)
         return x
 
-class RawNet2(nn.Module):
+class RawNet2(BaseModel):
     def __init__(self, n_gru_layers: int = 3, min_low_hz: int = 0, min_band_hz: int = 0) -> None:
         super().__init__()
         self.fixed_sync_filters = nn.Sequential(

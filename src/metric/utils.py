@@ -151,7 +151,7 @@ def compute_det_curve(target_scores, nontarget_scores):
     return frr, far, thresholds
 
 
-def calculate_eer(y_scores: np.array, y_true: np.array):
+def calculate_eer(y_true: np.array, y_scores: np.array):
     """ 
     Returns equal error rate (EER) and the corresponding threshold.
     """

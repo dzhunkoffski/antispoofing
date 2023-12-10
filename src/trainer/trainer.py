@@ -83,9 +83,6 @@ class Trainer(BaseTrainer):
         self.train_metrics.reset()
         self.writer.add_scalar("epoch", epoch)
 
-        true_labels = []
-        pred_labels = []
-
         for batch_idx, batch in enumerate(
                 tqdm(self.train_dataloader, desc="train", total=self.len_epoch)
         ):
@@ -106,8 +103,6 @@ class Trainer(BaseTrainer):
                     continue
                 else:
                     raise e
-            true_labels.append(batch['label'])
-            pred_labels.append(batch['logits'])
             self.train_metrics.update("grad norm", self.get_grad_norm())
             if batch_idx % self.log_step == 0:
                 self.writer.set_step((epoch - 1) * self.len_epoch + batch_idx)
@@ -127,16 +122,6 @@ class Trainer(BaseTrainer):
             if batch_idx >= self.len_epoch:
                 break
         log = last_train_metrics
-        true_labels = torch.cat(true_labels, dim=0)
-        pred_labels = torch.cat(pred_labels, dim=0)
-
-        eer = calculate_eer(
-            true_labels.detach().cpu().numpy(),
-            pred_labels[:, 1].detach().cpu().numpy()
-        )
-        self.writer.add_scalar(
-            "train_eer", eer
-        )
 
         for part, dataloader in self.evaluation_dataloaders.items():
             val_log = self._evaluation_epoch(epoch, part, dataloader)
