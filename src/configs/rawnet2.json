@@ -12,7 +12,11 @@
     },
     "arch": {
         "type": "RawNet2",
-        "args": {}
+        "args": {
+            "n_gru_layers": 3,
+            "min_low_hz": 50,
+            "min_band_hz": 50
+        }
     },
     "data": {
         "train": {
@@ -62,10 +66,11 @@
         }
     },
     "trainer": {
-        "epochs": 100,
+        "epochs": 150,
         "save_dir": "saved/",
         "save_period": 2,
         "verbosity": 1,
+        "eval_eer_frequency": 1, 
         "monitor": "min val_loss",
         "early_stop": 100,
         "visualize": "wandb",

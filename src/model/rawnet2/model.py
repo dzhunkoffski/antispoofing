@@ -67,10 +67,10 @@ class AbsoluteWrapper(nn.Module):
         return x
 
 class RawNet2(nn.Module):
-    def __init__(self, ) -> None:
+    def __init__(self, n_gru_layers: int = 3, min_low_hz: int = 0, min_band_hz: int = 0) -> None:
         super().__init__()
         self.fixed_sync_filters = nn.Sequential(
-            SincConv_fast(out_channels=128, kernel_size=1024, in_channels=1, stride=1, min_low_hz=0, min_band_hz=0),
+            SincConv_fast(out_channels=128, kernel_size=1024, in_channels=1, stride=1, min_low_hz=min_low_hz, min_band_hz=min_band_hz),
             AbsoluteWrapper(),
             nn.MaxPool1d(kernel_size=3),
             nn.BatchNorm1d(num_features=128),
@@ -87,7 +87,7 @@ class RawNet2(nn.Module):
             ResBlock(in_channels=128, out_channels=128)
         )
         self.batch_norm = nn.BatchNorm1d(num_features=128)
-        self.gru = nn.GRU(input_size=128, hidden_size=1024, num_layers=3)
+        self.gru = nn.GRU(input_size=128, hidden_size=1024, num_layers=n_gru_layers)
         self.fc = nn.Linear(in_features=1024, out_features=1024)
         self.activasion = nn.LeakyReLU()
         self.clf = nn.Linear(in_features=1024, out_features=2)
