@@ -16,27 +16,27 @@
     },
     "data": {
         "train": {
-            "batch_size": 2,
+            "batch_size": 32,
             "num_workers": 4,
             "datasets": [
                 {
                     "type": "ASVspoofDataset",
                     "args": {
-                        "flac_path": "data/LA/ASVspoof2019_LA_train/flac",
-                        "labels_path": "data/LA/ASVspoof2019_LA_cm_protocols/ASVspoof2019.LA.cm.train.trn.txt"
+                        "flac_path": "/kaggle/input/asvpoof-2019-dataset/LA/LA/ASVspoof2019_LA_train/flac",
+                        "labels_path": "/kaggle/input/asvpoof-2019-dataset/LA/LA/ASVspoof2019_LA_cm_protocols/ASVspoof2019.LA.cm.train.trn.txt"
                     }
                 }
             ]
         },
         "val": {
-            "batch_size": 2,
+            "batch_size": 32,
             "num_workers": 4,
             "datasets": [
                 {
                     "type": "ASVspoofDataset",
                     "args": {
-                        "flac_path": "data/LA/ASVspoof2019_LA_eval/flac",
-                        "labels_path": "data/LA/ASVspoof2019_LA_cm_protocols/ASVspoof2019.LA.cm.eval.trl.txt"
+                        "flac_path": "/kaggle/input/asvpoof-2019-dataset/LA/LA/ASVspoof2019_LA_eval/flac",
+                        "labels_path": "/kaggle/input/asvpoof-2019-dataset/LA/LA/ASVspoof2019_LA_cm_protocols/ASVspoof2019.LA.cm.eval.trl.txt"
                     }
                 }
             ]
@@ -54,17 +54,23 @@
         "args": {}
     },
     "metrics": [],
-    "lr_scheduler": {},
+    "lr_scheduler": {
+        "type": "StepLR",
+        "args": {
+            "step_size": 150,
+            "gamma": 1.0
+        }
+    },
     "trainer": {
         "epochs": 100,
         "save_dir": "saved/",
-        "save_period": 3,
+        "save_period": 5,
         "verbosity": 1,
         "monitor": "min val_loss",
         "early_stop": 100,
         "visualize": "wandb",
-        "wandb_project": "speaker_separation",
-        "len_epoch": 50,
+        "wandb_project": "antispoofing",
+        "len_epoch": 50000,
         "grad_norm_clip": 100
     }
 }

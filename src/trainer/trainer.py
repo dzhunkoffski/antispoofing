@@ -10,11 +10,11 @@ from torch.nn.utils import clip_grad_norm_
 from torchvision.transforms import ToTensor
 from tqdm import tqdm
 
-from hw_asr.base import BaseTrainer
-from hw_asr.base.base_text_encoder import BaseTextEncoder
-from hw_asr.logger.utils import plot_spectrogram_to_buf
-from hw_asr.metric.utils import calc_cer, calc_wer
-from hw_asr.utils import inf_loop, MetricTracker
+from src.base import BaseTrainer
+from src.logger.utils import plot_spectrogram_to_buf
+from src.utils import inf_loop, MetricTracker
+
+from src.metric.utils import calculate_eer
 
 
 class Trainer(BaseTrainer):
@@ -31,14 +31,12 @@ class Trainer(BaseTrainer):
             config,
             device,
             dataloaders,
-            text_encoder,
             lr_scheduler=None,
             len_epoch=None,
             skip_oom=True,
     ):
         super().__init__(model, criterion, metrics, optimizer, config, device, lr_scheduler)
         self.skip_oom = skip_oom
-        self.text_encoder = text_encoder
         self.config = config
         self.train_dataloader = dataloaders["train"]
         if len_epoch is None:
@@ -64,7 +62,7 @@ class Trainer(BaseTrainer):
         """
         Move all necessary tensors to the HPU
         """
-        for tensor_for_gpu in ["spectrogram", "text_encoded"]:
+        for tensor_for_gpu in ["audio", "label"]:
             batch[tensor_for_gpu] = batch[tensor_for_gpu].to(device)
         return batch
 
@@ -84,9 +82,14 @@ class Trainer(BaseTrainer):
         self.model.train()
         self.train_metrics.reset()
         self.writer.add_scalar("epoch", epoch)
+
+        true_labels = []
+        pred_labels = []
+
         for batch_idx, batch in enumerate(
                 tqdm(self.train_dataloader, desc="train", total=self.len_epoch)
         ):
+            
             try:
                 batch = self.process_batch(
                     batch,
@@ -103,6 +106,8 @@ class Trainer(BaseTrainer):
                     continue
                 else:
                     raise e
+            true_labels.append(batch['label'])
+            pred_labels.append(batch['logits'])
             self.train_metrics.update("grad norm", self.get_grad_norm())
             if batch_idx % self.log_step == 0:
                 self.writer.set_step((epoch - 1) * self.len_epoch + batch_idx)
@@ -114,8 +119,6 @@ class Trainer(BaseTrainer):
                 self.writer.add_scalar(
                     "learning rate", self.lr_scheduler.get_last_lr()[0]
                 )
-                # self._log_predictions(**batch)
-                # self._log_spectrogram(batch["spectrogram"])
                 self._log_scalars(self.train_metrics)
                 # we don't want to reset train metrics at the start of every epoch
                 # because we are interested in recent train metrics
@@ -124,6 +127,16 @@ class Trainer(BaseTrainer):
             if batch_idx >= self.len_epoch:
                 break
         log = last_train_metrics
+        true_labels = torch.cat(true_labels, dim=0)
+        pred_labels = torch.cat(pred_labels, dim=0)
+
+        eer = calculate_eer(
+            true_labels.detach().cpu().numpy(),
+            pred_labels[:, 1].detach().cpu().numpy()
+        )
+        self.writer.add_scalar(
+            "train_eer", eer
+        )
 
         for part, dataloader in self.evaluation_dataloaders.items():
             val_log = self._evaluation_epoch(epoch, part, dataloader)
@@ -141,10 +154,6 @@ class Trainer(BaseTrainer):
         else:
             batch["logits"] = outputs
 
-        # batch["log_probs"] = F.log_softmax(batch["logits"], dim=-1)
-        # batch["log_probs_length"] = self.model.transform_input_lengths(
-        #     batch["spectrogram_length"]
-        # )
         batch["loss"] = self.criterion(**batch)
         if is_train:
             batch["loss"].backward()
@@ -167,6 +176,10 @@ class Trainer(BaseTrainer):
         """
         self.model.eval()
         self.evaluation_metrics.reset()
+
+        true_labels = []
+        pred_labels = []
+
         with torch.no_grad():
             for batch_idx, batch in tqdm(
                     enumerate(dataloader),
@@ -178,14 +191,23 @@ class Trainer(BaseTrainer):
                     is_train=False,
                     metrics=self.evaluation_metrics,
                 )
+                true_labels.append(batch['label'])
+                pred_labels.append(batch['logits'])
             self.writer.set_step(epoch * self.len_epoch, part)
             self._log_scalars(self.evaluation_metrics)
-            # self._log_predictions(**batch)
-            # self._log_spectrogram(batch["spectrogram"])
 
+        true_labels = torch.cat(true_labels, dim=0)
+        pred_labels = torch.cat(pred_labels, dim=0)
+        eer = calculate_eer(
+            true_labels.detach().cpu().numpy(),
+            pred_labels[:, 1].detach().cpu().numpy()
+        )
+        self.writer.add_scalar(
+            "eval_eer", eer
+        )
         # add histogram of model parameters to the tensorboard
-        for name, p in self.model.named_parameters():
-            self.writer.add_histogram(name, p, bins="auto")
+        # for name, p in self.model.named_parameters():
+        #     self.writer.add_histogram(name, p, bins="auto")
         return self.evaluation_metrics.result()
 
     def _progress(self, batch_idx):

@@ -4,6 +4,7 @@ from torch.utils.data import Dataset
 import torchaudio
 
 import pandas as pd
+import numpy as np
 
 class ASVspoofDataset(Dataset):
     def __init__(self, flac_path: str, labels_path: str) -> None:
@@ -26,9 +27,8 @@ class ASVspoofDataset(Dataset):
         if waveform.size()[-1] >= 64000:
             waveform = waveform[:, :64000]
         else:
-            buffer = torch.zeros(1, 64000)
             pad_size = 64000 - waveform.size()[-1]
-            buffer[:, :waveform.size()[-1]] = waveform
-            buffer[:, waveform.size()[-1]:] = waveform[:, pad_size]
-            waveform = buffer
+            waveform = waveform.numpy()
+            waveform = np.pad(waveform, ((0, 0), (0, pad_size)), 'wrap')
+            waveform = torch.tensor(waveform)
         return waveform, label
