@@ -67,7 +67,7 @@ class AbsoluteWrapper(nn.Module):
         return x
 
 class RawNet2(nn.Module):
-    def __init__(self) -> None:
+    def __init__(self, ) -> None:
         super().__init__()
         self.fixed_sync_filters = nn.Sequential(
             SincConv_fast(out_channels=128, kernel_size=1024, in_channels=1, stride=1, min_low_hz=0, min_band_hz=0),
