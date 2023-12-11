@@ -18,7 +18,7 @@ class ResBlockInitial(nn.Module):
         )
         self.conv_pad_channels = nn.Conv1d(in_channels=in_channels, out_channels=out_channels, kernel_size=1, padding='same')
         self.maxpool = nn.MaxPool1d(kernel_size=3)
-        self.fms = FMS()
+        self.fms = FMS(n_channels=out_channels)
 
     def forward(self, x):
         res = self.layer(x)
@@ -46,7 +46,7 @@ class ResBlock(nn.Module):
             self.pad_channels = True
 
         self.maxpool = nn.MaxPool1d(kernel_size=3)
-        self.fms = FMS()
+        self.fms = FMS(n_channels=out_channels)
     
     def forward(self, x):
         res = self.layer(x)
