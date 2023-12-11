@@ -67,15 +67,23 @@ class AbsoluteWrapper(nn.Module):
         return x
 
 class RawNet2(BaseModel):
-    def __init__(self, n_gru_layers: int = 3, min_low_hz: int = 0, min_band_hz: int = 0) -> None:
+    def __init__(self, n_gru_layers: int = 3, min_low_hz: int = 0, min_band_hz: int = 0, abs_after_sinclayer: bool = True) -> None:
         super().__init__()
-        self.fixed_sync_filters = nn.Sequential(
-            SincConv_fast(out_channels=128, kernel_size=1024, in_channels=1, stride=1, min_low_hz=min_low_hz, min_band_hz=min_band_hz),
-            AbsoluteWrapper(),
-            nn.MaxPool1d(kernel_size=3),
-            nn.BatchNorm1d(num_features=128),
-            nn.LeakyReLU()
-        )
+        if abs_after_sinclayer:
+            self.fixed_sync_filters = nn.Sequential(
+                SincConv_fast(out_channels=128, kernel_size=1024, in_channels=1, stride=1, min_low_hz=min_low_hz, min_band_hz=min_band_hz),
+                AbsoluteWrapper(),
+                nn.MaxPool1d(kernel_size=3),
+                nn.BatchNorm1d(num_features=128),
+                nn.LeakyReLU()
+            )
+        else:
+            self.fixed_sync_filters = nn.Sequential(
+                SincConv_fast(out_channels=128, kernel_size=1024, in_channels=1, stride=1, min_low_hz=min_low_hz, min_band_hz=min_band_hz),
+                nn.MaxPool1d(kernel_size=3),
+                nn.BatchNorm1d(num_features=128),
+                nn.LeakyReLU()
+            ) 
         self.resblock1 = nn.Sequential(
             ResBlockInitial(in_channels=128, out_channels=20),
             ResBlock(in_channels=20, out_channels=20)
