@@ -71,7 +71,7 @@ class RawNet2(BaseModel):
         super().__init__()
         if abs_after_sinclayer:
             self.fixed_sync_filters = nn.Sequential(
-                SincConv_fast(out_channels=128, kernel_size=1024, in_channels=1, stride=1, min_low_hz=min_low_hz, min_band_hz=min_band_hz),
+                SincConv_fast(out_channels=20, kernel_size=1024, in_channels=1, stride=1, min_low_hz=min_low_hz, min_band_hz=min_band_hz),
                 AbsoluteWrapper(),
                 nn.MaxPool1d(kernel_size=3),
                 nn.BatchNorm1d(num_features=128),
