@@ -74,18 +74,18 @@ class RawNet2(BaseModel):
                 SincConv_fast(out_channels=20, kernel_size=1024, in_channels=1, stride=1, min_low_hz=min_low_hz, min_band_hz=min_band_hz),
                 AbsoluteWrapper(),
                 nn.MaxPool1d(kernel_size=3),
-                nn.BatchNorm1d(num_features=128),
+                nn.BatchNorm1d(num_features=20),
                 nn.LeakyReLU()
             )
         else:
             self.fixed_sync_filters = nn.Sequential(
-                SincConv_fast(out_channels=128, kernel_size=1024, in_channels=1, stride=1, min_low_hz=min_low_hz, min_band_hz=min_band_hz),
+                SincConv_fast(out_channels=20, kernel_size=1024, in_channels=1, stride=1, min_low_hz=min_low_hz, min_band_hz=min_band_hz),
                 nn.MaxPool1d(kernel_size=3),
-                nn.BatchNorm1d(num_features=128),
+                nn.BatchNorm1d(num_features=20),
                 nn.LeakyReLU()
             ) 
         self.resblock1 = nn.Sequential(
-            ResBlockInitial(in_channels=128, out_channels=20),
+            ResBlockInitial(in_channels=20, out_channels=20),
             ResBlock(in_channels=20, out_channels=20)
         )
         self.resblock2 = nn.Sequential(
