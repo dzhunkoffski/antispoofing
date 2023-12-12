@@ -155,8 +155,8 @@ def calculate_eer(y_true: np.array, y_scores: np.array):
     """ 
     Returns equal error rate (EER) and the corresponding threshold.
     """
-    bonafide_scores = y_scores[y_true == 0]
-    other_scores = y_scores[y_true == 1]
+    bonafide_scores = y_scores[y_true == 1]
+    other_scores = y_scores[y_true == 0]
     frr, far, thresholds = compute_det_curve(bonafide_scores, other_scores)
     abs_diffs = np.abs(frr - far)
     min_index = np.argmin(abs_diffs)
