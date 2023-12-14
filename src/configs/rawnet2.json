@@ -67,8 +67,8 @@
         }
     },
     "trainer": {
-        "kaggle_profile": "Profile5",
-        "kaggle_version_name": "asv_spoof",
+        "kaggle_profile": "Profile2",
+        "kaggle_version_name": "spoof ablation min_low_hz 50",
         "epochs": 150,
         "save_dir": "saved/",
         "save_period": 2,
