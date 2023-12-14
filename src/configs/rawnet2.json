@@ -16,7 +16,7 @@
             "n_gru_layers": 3,
             "min_low_hz": 0,
             "min_band_hz": 0,
-            "abs_after_sinclayer": true
+            "abs_after_sinclayer": false
         }
     },
     "data": {
@@ -67,6 +67,7 @@
         }
     },
     "trainer": {
+        "kaggle_profile": "Profile5",
         "epochs": 150,
         "save_dir": "saved/",
         "save_period": 2,

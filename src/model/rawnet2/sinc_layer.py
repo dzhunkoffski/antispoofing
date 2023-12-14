@@ -70,21 +70,24 @@ class SincConv_fast(nn.Module):
         low_hz = 30
         high_hz = self.sample_rate / 2 - (self.min_low_hz + self.min_band_hz)
 
-        mel = np.linspace(self.to_mel(low_hz),
-                          self.to_mel(high_hz),
-                          self.out_channels + 1)
-        hz = self.to_hz(mel)
+        # S1
+        # mel = np.linspace(self.to_mel(low_hz),
+        #                   self.to_mel(high_hz),
+        #                   self.out_channels + 1)
+        # hz = self.to_hz(mel)
 
+        # S3 linear scaled
+        hz = np.linspace(low_hz, high_hz, self.out_channels + 1)
 
         # filter lower frequency (out_channels, 1)
-        # self.low_hz_ = nn.Parameter(torch.Tensor(hz[:-1]).view(-1, 1))
-
-        # # filter frequency band (out_channels, 1)
-        # self.band_hz_ = nn.Parameter(torch.Tensor(np.diff(hz)).view(-1, 1))
-        self.low_hz_ = torch.Tensor(hz[:-1]).view(-1, 1)
+        self.low_hz_ = nn.Parameter(torch.Tensor(hz[:-1]).view(-1, 1))
 
         # filter frequency band (out_channels, 1)
-        self.band_hz_ = torch.Tensor(np.diff(hz)).view(-1, 1)
+        self.band_hz_ = nn.Parameter(torch.Tensor(np.diff(hz)).view(-1, 1))
+        # self.low_hz_ = torch.Tensor(hz[:-1]).view(-1, 1)
+
+        # filter frequency band (out_channels, 1)
+        # self.band_hz_ = torch.Tensor(np.diff(hz)).view(-1, 1)
 
         # Hamming window
         #self.window_ = torch.hamming_window(self.kernel_size)
