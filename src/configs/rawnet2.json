@@ -14,7 +14,7 @@
         "type": "RawNet2",
         "args": {
             "n_gru_layers": 3,
-            "min_low_hz": 0,
+            "min_low_hz": 50,
             "min_band_hz": 0,
             "abs_after_sinclayer": false
         }
@@ -68,6 +68,7 @@
     },
     "trainer": {
         "kaggle_profile": "Profile5",
+        "kaggle_version_name": "asv_spoof",
         "epochs": 150,
         "save_dir": "saved/",
         "save_period": 2,
