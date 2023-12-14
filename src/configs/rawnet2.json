@@ -14,7 +14,7 @@
         "type": "RawNet2",
         "args": {
             "n_gru_layers": 3,
-            "min_low_hz": 0,
+            "min_low_hz": 50,
             "min_band_hz": 50,
             "abs_after_sinclayer": false
         }
@@ -67,8 +67,8 @@
         }
     },
     "trainer": {
-        "kaggle_profile": "Profile3",
-        "kaggle_version_name": "spoof ablation min_band_hz 50",
+        "kaggle_profile": "Profile6",
+        "kaggle_version_name": "spoof ablation min_band_hz 50 minlowhz50",
         "epochs": 150,
         "save_dir": "saved/",
         "save_period": 2,
