@@ -14,9 +14,9 @@
         "type": "RawNet2",
         "args": {
             "n_gru_layers": 3,
-            "min_low_hz": 50,
-            "min_band_hz": 50,
-            "abs_after_sinclayer": false
+            "min_low_hz": 0,
+            "min_band_hz": 0,
+            "abs_after_sinclayer": true
         }
     },
     "data": {
