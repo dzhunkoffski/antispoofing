@@ -37,8 +37,7 @@
                     "type": "LCNNDataset",
                     "args": {
                         "flac_path": "/kaggle/input/asvpoof-2019-dataset/LA/LA/ASVspoof2019_LA_eval/flac",
-                        "labels_path": "/kaggle/input/asvpoof-2019-dataset/LA/LA/ASVspoof2019_LA_cm_protocols/ASVspoof2019.LA.cm.eval.trl.txt",
-                        "n_fft": 1724
+                        "labels_path": "/kaggle/input/asvpoof-2019-dataset/LA/LA/ASVspoof2019_LA_cm_protocols/ASVspoof2019.LA.cm.eval.trl.txt"
                     }
                 }
             ]

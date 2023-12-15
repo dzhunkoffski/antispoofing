@@ -45,7 +45,7 @@ class LighCNN(nn.Module):
         )
         self.maxpool4 = nn.MaxPool2d(kernel_size=2, stride=2)
         self.block5 = nn.Sequential(
-            nn.Linear(in_features=32 * 52 * 45, out_features=160),
+            nn.Linear(in_features=21600, out_features=160),
             MaxFeatureMap(),
             nn.BatchNorm1d(num_features=80)
         )
