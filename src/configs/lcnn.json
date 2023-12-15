@@ -12,36 +12,33 @@
     },
     "arch": {
         "type": "RawNet2",
-        "args": {
-            "n_gru_layers": 3,
-            "min_low_hz": 0,
-            "min_band_hz": 0,
-            "abs_after_sinclayer": false
-        }
+        "args": {}
     },
     "data": {
         "train": {
-            "batch_size": 32,
+            "batch_size": 64,
             "num_workers": 4,
             "datasets": [
                 {
-                    "type": "ASVspoofDataset",
+                    "type": "LCNNDataset",
                     "args": {
                         "flac_path": "/kaggle/input/asvpoof-2019-dataset/LA/LA/ASVspoof2019_LA_train/flac",
-                        "labels_path": "/kaggle/input/asvpoof-2019-dataset/LA/LA/ASVspoof2019_LA_cm_protocols/ASVspoof2019.LA.cm.train.trn.txt"
+                        "labels_path": "/kaggle/input/asvpoof-2019-dataset/LA/LA/ASVspoof2019_LA_cm_protocols/ASVspoof2019.LA.cm.train.trn.txt",
+                        "n_fft": 1724
                     }
                 }
             ]
         },
         "eval": {
-            "batch_size": 32,
+            "batch_size": 64,
             "num_workers": 4,
             "datasets": [
                 {
-                    "type": "ASVspoofDataset",
+                    "type": "LCNNDataset",
                     "args": {
                         "flac_path": "/kaggle/input/asvpoof-2019-dataset/LA/LA/ASVspoof2019_LA_eval/flac",
-                        "labels_path": "/kaggle/input/asvpoof-2019-dataset/LA/LA/ASVspoof2019_LA_cm_protocols/ASVspoof2019.LA.cm.eval.trl.txt"
+                        "labels_path": "/kaggle/input/asvpoof-2019-dataset/LA/LA/ASVspoof2019_LA_cm_protocols/ASVspoof2019.LA.cm.eval.trl.txt",
+                        "n_fft": 1724
                     }
                 }
             ]
@@ -50,20 +47,20 @@
     "optimizer": {
         "type": "Adam",
         "args": {
-            "lr":  0.0001,
+            "lr":  3e-4,
             "weight_decay": 0
         }
     },
     "loss": {
-        "type": "RawNet2Loss",
+        "type": "LCNNLoss",
         "args": {}
     },
     "metrics": [],
     "lr_scheduler": {
         "type": "StepLR",
         "args": {
-            "step_size": 150,
-            "gamma": 1.0
+            "step_size": 10,
+            "gamma": 0.5
         }
     },
     "trainer": {
