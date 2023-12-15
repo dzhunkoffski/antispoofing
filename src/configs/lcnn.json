@@ -12,7 +12,9 @@
     },
     "arch": {
         "type": "LighCNN",
-        "args": {}
+        "args": {
+            "dropout_p": 0.5
+        }
     },
     "data": {
         "train": {

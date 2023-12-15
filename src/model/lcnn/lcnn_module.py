@@ -5,7 +5,7 @@ import torch.nn.functional as F
 from src.model.lcnn.mfm import MaxFeatureMap
 
 class LighCNN(nn.Module):
-    def __init__(self) -> None:
+    def __init__(self, dropout_p : float = 0.0) -> None:
         super().__init__()
 
         self.block1 = nn.Sequential(
@@ -50,6 +50,7 @@ class LighCNN(nn.Module):
             nn.BatchNorm1d(num_features=80)
         )
         self.clf = nn.Linear(in_features=80, out_features=2, bias=False)
+        self.dropout = nn.Dropout(p=dropout_p)
     
     def forward(self, audio, **batch):
         x = self.block1(audio)
@@ -63,5 +64,6 @@ class LighCNN(nn.Module):
         x = self.maxpool4(x)
         x = torch.flatten(x, start_dim=1)
         x = self.block5(x)
+        x = self.dropout(x)
         x = self.clf(x)
         return x
