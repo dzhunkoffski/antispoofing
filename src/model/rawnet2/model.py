@@ -105,8 +105,8 @@ class RawNet2(BaseModel):
         x = self.fixed_sync_filters(audio)
         x = self.resblock1(x)
         x = self.resblock2(x)
-        x = self.batch_norm(x)
-        x = self.activasion(x)
+        # x = self.batch_norm(x)
+        # x = self.activasion(x)
         x = torch.permute(x, (0, 2, 1))
         x, _ = self.gru(x)
         x = x[:, -1, :]
