@@ -13,7 +13,7 @@
     "arch": {
         "type": "RawNet2",
         "args": {
-            "n_gru_layers": 1,
+            "n_gru_layers": 3,
             "min_low_hz": 0,
             "min_band_hz": 0,
             "abs_after_sinclayer": false
@@ -48,10 +48,10 @@
         }
     },
     "optimizer": {
-        "type": "AdamW",
+        "type": "Adam",
         "args": {
             "lr":  0.0001,
-            "weight_decay": 0.0001
+            "weight_decay": 0
         }
     },
     "loss": {
@@ -67,8 +67,8 @@
         }
     },
     "trainer": {
-        "kaggle_profile": "Profile6",
-        "kaggle_version_name": "spoof ablation no bn and leaky relu and gru1",
+        "kaggle_profile": "Profile7",
+        "kaggle_version_name": "spoof ablation no wd",
         "epochs": 150,
         "save_dir": "saved/",
         "save_period": 2,
