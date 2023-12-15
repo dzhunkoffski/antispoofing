@@ -67,8 +67,8 @@
         }
     },
     "trainer": {
-        "kaggle_profile": "Profile4",
-        "kaggle_version_name": "spoof ablation min_band_hz 50 minlowhz50",
+        "kaggle_profile": "Profile5",
+        "kaggle_version_name": "spoof ablation no bn and leaky relu",
         "epochs": 150,
         "save_dir": "saved/",
         "save_period": 2,
