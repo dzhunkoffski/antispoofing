@@ -16,7 +16,7 @@
             "n_gru_layers": 3,
             "min_low_hz": 0,
             "min_band_hz": 0,
-            "abs_after_sinclayer": false
+            "abs_after_sinclayer": true
         }
     },
     "data": {
@@ -51,7 +51,7 @@
         "type": "Adam",
         "args": {
             "lr":  0.0001,
-            "weight_decay": 0
+            "weight_decay": 0.0001
         }
     },
     "loss": {
