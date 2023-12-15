@@ -13,7 +13,7 @@
     "arch": {
         "type": "RawNet2",
         "args": {
-            "n_gru_layers": 1,
+            "n_gru_layers": 3,
             "min_low_hz": 0,
             "min_band_hz": 0,
             "abs_after_sinclayer": false
