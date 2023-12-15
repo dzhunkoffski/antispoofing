@@ -52,7 +52,7 @@
         }
     },
     "loss": {
-        "type": "LCNNLoss",
+        "type": "LCNNLossCE",
         "args": {}
     },
     "metrics": [],
