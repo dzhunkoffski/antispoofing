@@ -11,7 +11,7 @@
         "spectrogram": []
     },
     "arch": {
-        "type": "RawNet2",
+        "type": "LighCNN",
         "args": {}
     },
     "data": {
