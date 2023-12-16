@@ -3,7 +3,13 @@ DL-AUDIO homework
 
 ## Get dataset:
 ```bash
-mkdir data
-cd data
-wget https://datashare.ed.ac.uk/bitstream/handle/10283/3336/LA.zip -q --show-progress
+скачай с каггла
 ```
+
+## Train model
+python train.py --config /kaggle/working/antispoofing/src/configs/rawnet2.json
+
+## Test model
+python test.py --config src/configs/rawnet2.json --resume checkpoint/rawnet2/checkpoint-epoch62.pth
+
+файл `kaggle_notebook.ipynb` содержит 

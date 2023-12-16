@@ -2,9 +2,13 @@ import argparse
 import json
 import os
 from pathlib import Path
+import glob
 
 import torch
+import torch.nn.functional as F
+import torchaudio
 from tqdm import tqdm
+import numpy as np
 
 import src.model as module_model
 from src.trainer import Trainer
@@ -21,14 +25,8 @@ def main(config, out_file):
     # define cpu or gpu if possible
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    # text_encoder
-    text_encoder = config.get_text_encoder()
-
-    # setup data_loader instances
-    dataloaders = get_dataloaders(config, text_encoder)
-
     # build model architecture
-    model = config.init_obj(config["arch"], module_model, n_class=len(text_encoder))
+    model = config.init_obj(config["arch"], module_model)
     logger.info(model)
 
     logger.info("Loading checkpoint: {} ...".format(config.resume))
@@ -42,36 +40,27 @@ def main(config, out_file):
     model = model.to(device)
     model.eval()
 
-    results = []
+    audio_path = 'test_audios'
+    audios_path = glob.glob(f'{audio_path}/*.flac') + glob.glob(f'{audio_path}/*.wav') + glob.glob(f'{audio_path}/*.mp3')
+    print(audios_path)
+    for audio in audios_path:
+        audio_tensor, sr = torchaudio.load(audio)
+        if sr != 16000:
+            audio_tensor = torchaudio.functional.resample(audio_tensor, sr, 16000)
+        
+        if audio_tensor.size()[-1] >= 64000:
+            audio_tensor = audio_tensor[:, :64000]
+        else:
+            pad_size = 64000 - audio_tensor.size()[-1]
+            audio_tensor = audio_tensor.numpy()
+            audio_tensor = np.pad(audio_tensor, ((0, 0), (0, pad_size)), 'wrap')
+            audio_tensor = torch.tensor(audio_tensor)
+        audio_tensor = audio_tensor.unsqueeze(0)
+        audio_tensor = audio_tensor.float().to(device)
+        with torch.no_grad():
+            output = model(audio=audio_tensor)['logits']
+        print(f'Audio: {audio}, spoof prob: {F.softmax(output)[0, 1].item()}')
 
-    with torch.no_grad():
-        for batch_num, batch in enumerate(tqdm(dataloaders["test"])):
-            batch = Trainer.move_batch_to_device(batch, device)
-            output = model(**batch)
-            if type(output) is dict:
-                batch.update(output)
-            else:
-                batch["logits"] = output
-            batch["log_probs"] = torch.log_softmax(batch["logits"], dim=-1)
-            batch["log_probs_length"] = model.transform_input_lengths(
-                batch["spectrogram_length"]
-            )
-            batch["probs"] = batch["log_probs"].exp().cpu()
-            batch["argmax"] = batch["probs"].argmax(-1)
-            for i in range(len(batch["text"])):
-                argmax = batch["argmax"][i]
-                argmax = argmax[: int(batch["log_probs_length"][i])]
-                results.append(
-                    {
-                        "ground_trurh": batch["text"][i],
-                        "pred_text_argmax": text_encoder.ctc_decode(argmax.cpu().numpy()),
-                        "pred_text_beam_search": text_encoder.ctc_beam_search(
-                            batch["probs"][i], batch["log_probs_length"][i], beam_size=100
-                        )[:10],
-                    }
-                )
-    with Path(out_file).open("w") as f:
-        json.dump(results, f, indent=2)
 
 
 if __name__ == "__main__":
@@ -165,8 +154,8 @@ if __name__ == "__main__":
             }
         }
 
-    assert config.config.get("data", {}).get("test", None) is not None
-    config["data"]["test"]["batch_size"] = args.batch_size
-    config["data"]["test"]["n_jobs"] = args.jobs
+    # assert config.config.get("data", {}).get("test", None) is not None
+    # config["data"]["test"]["batch_size"] = args.batch_size
+    # config["data"]["test"]["n_jobs"] = args.jobs
 
     main(config, args.output)
